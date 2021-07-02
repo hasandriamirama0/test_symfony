@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Person creation</h1>
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <input type="submit" value="Submit" />
+    {{ form_end(form) }}
+
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+        $(document).ready( function() {
+            $('#company_postal_code').change(function() {
+                var postalCodeSelector = $(this);
+                $.ajax({
+                    url: "{{ path('add-company') }}",
+                    type: "GET",
+                    dataType: "JSON",
+                    data: {
+                        postal_code_id: postalCodeSelector.val()
+                    },
+                    success: function (cities) {
+                        var citySelect = $("#company_city");
+
+                        // Remove current options
+                        citySelect.html('');
+
+                        // Empty value ...
+                        citySelect.append('<option value> Select a neighborhood of ' + postalCodeSelector.find("option:selected").text() + ' ...</option>');
+
+                        $.each(cities, function (key, city) {
+                            citySelect.append('<option value="' + city.id + '">' + city.name + '</option>');
+                        });
+                    },
+                    error: function (err) {
+                        console.log("An error ocurred while loading data ...");
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
